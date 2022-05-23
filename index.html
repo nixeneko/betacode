@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="gr">
+<head>
+ <meta charset="UTF-8"> 
+ <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+ <title>Greek Beta Code Converter</title>
+ <style type="text/css">
+form {font-size: 140%;}
+@media screen and (max-width:680px){
+  .container{
+    width: 100%;
+  }
+  .textarea_container{
+    width: 100%;
+  }
+  textarea {
+   width: 100%;
+   resize: vertical;
+   font-family : inherit;
+   font-size: 100%;
+   height: 8em;
+  }
+}
+@media screen and (min-width:680px){
+  .container{
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 1rem 1fr;
+    grid-template-rows: 2em auto;
+	height: calc(100vh - 4.5em);
+  }
+  textarea {
+    width: 100%;
+    font-family : inherit;
+    font-size: 100%;
+    height: calc(100vh - 6.5em);
+  }
+  #legend_greek{
+    display: block;
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+  }
+  #texcont_greek{
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+  }
+  #legend_bc{
+    white-space: nowrap; 
+    grid-row: 1 / 2;
+    grid-column: 3 / 4;
+  }
+  #texcont_bc{
+    grid-row: 2 / 3;
+    grid-column: 3 / 4;
+  }
+  #buttons_pc{
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+  }
+}
+ </style>
+ <script type="text/javascript">
+//ci2sv_dict
+function greek2bc(){
+  text = document.forms.mainForm.greek.value;
+  
+  text = text.normalize("NFD");
+  translate_table = {
+    "Α": "*A", "Β": "*B", "Γ": "*G", "Δ": "*D", "Ε": "*E",
+    "Ϝ": "*V", "Ζ": "*Z", "Η": "*H", "Θ": "*Q", "Ι": "*I",
+    "Κ": "*K", "Λ": "*L", "Μ": "*M", "Ν": "*N", "Ξ": "*C",
+    "Ο": "*O", "Π": "*P", "Ρ": "*R", "Ϲ": "*S3", "Σ": "*S",
+    "Τ": "*T", "Υ": "*U", "Φ": "*F", "Χ": "*X", "Ψ": "*Y",
+    "Ω": "*W",
+    "α": "A", "β": "B", "γ": "G", "δ": "D", "ε": "E",
+	"ϝ": "V", "ζ": "Z", "η": "H", "θ": "Q", "ι": "I",
+	"κ": "K", "λ": "L", "μ": "M", "ν": "N", "ξ": "C",
+	"ο": "O", "π": "P", "ρ": "R", "ϲ": "S3", "τ": "T",
+	"υ": "U", "φ": "F",	"χ": "X", "ψ": "Y", "ω": "W", 
+	"·": ":", "’": "'", "‐": "-", "—": "_", "ʹ": "#",
+	"\u0313": ")", "\u0314": "(", "\u0301": "/", "\u0342": "=", "\u0300": "\\",
+    "\u0308": "+", "\u0345": "|", "\u0304": "&"};
+  for (key in translate_table){
+    text = text.replaceAll(key, translate_table[key]);
+  };
+  // convert "σ" to "S" if greek letter postcedes, otherwise "S1"
+  text = text.replaceAll(/σ(?=[σς\*A-Z])/g, "S");
+  text = text.replaceAll("σ", "S1");
+  // convert "ς" to "S2" if greek letter postcedes, otherwise "S"
+  text = text.replaceAll(/ς(?=[σς\*A-Z])/g, "S2");
+  text = text.replaceAll("ς", "S");
+  
+  //"S1": "σ", "S2": "ς", "J": "ς"
+  //console.log(text.length);
+  console.log("greek changed");
+  document.forms.mainForm.bc.value=text;
+}
+function bc2greek(){
+  text = document.forms.mainForm.bc.value;
+  //Capitalize first
+  text = text.toUpperCase();
+
+  translate_table = {
+    "*A": "Α", "*B": "Β", "*G": "Γ", "*D": "Δ", "*E": "Ε",
+    "*V": "Ϝ", "*Z": "Ζ", "*H": "Η", "*Q": "Θ", "*I": "Ι",
+    "*K": "Κ", "*L": "Λ", "*M": "Μ", "*N": "Ν", "*C": "Ξ",
+    "*O": "Ο", "*P": "Π", "*R": "Ρ", "*S3": "Ϲ", "*S": "Σ",
+    "*T": "Τ", "*U": "Υ", "*F": "Φ", "*X": "Χ", "*Y": "Ψ",
+    "*W": "Ω",
+    "A": "α", "B": "β", "G": "γ", "D": "δ", "E": "ε",
+	"V": "ϝ", "Z": "ζ", "H": "η", "Q": "θ", "I": "ι",
+	"K": "κ", "L": "λ", "M": "μ", "N": "ν", "C": "ξ",
+	"O": "ο", "P": "π", "R": "ρ", "S1": "σ", "S2": "ς",
+	"J": "ς", "S3": "ϲ", "T": "τ", "U": "υ", "F": "φ", 
+	"X": "χ", "Y": "ψ", "W": "ω", 
+	":": "·", "'": "’", "-": "‐", "_": "—", "#": "ʹ",
+	")": "\u0313", "(": "\u0314", "/": "\u0301", "=": "\u0342", "\\": "\u0300",
+    "+": "\u0308", "|": "\u0345", "&": "\u0304"};
+	
+  // remaining "S" should be converted to "σ" if greek letter comes next, otherwise to "ς"
+  // "S": "σ", "ς"
+  
+  //punctuations
+  //.→.
+  //,→,
+  //:→·
+  //;→;
+  //'→’
+  //-→‐
+  //_→—
+  //#→ʹ
+  
+  for (key in translate_table){
+    text = text.replaceAll(key, translate_table[key]);
+  };
+  
+  //Replace Ss
+  text = text.replaceAll(/S(?=[SΑ-ϝ])/g, "σ");
+  text = text.replaceAll("S", "ς");
+  
+  //console.log(text.length);
+  console.log("bc changed");
+  text = text.normalize('NFC');
+  document.forms.mainForm.greek.value=text;
+}
+
+ </script>
+</head>
+<body>
+<h1>Greek Beta Code Converter</h1>
+<form name="mainForm">
+ <div class="container">
+  <legend id="legend_greek">Greek</legend>
+  <div class="textarea_container" id="texcont_greek">
+   <textarea name="greek"></textarea>
+  </div>
+  <legend id="legend_bc">Beta Code</legend>
+  <div class="textarea_container" id="texcont_bc">
+   <textarea name="bc"></textarea>
+  </div>
+ </div>
+</form>
+</body>
+<script>
+const textarea_bc = document.forms.mainForm.bc;
+const textarea_greek = document.forms.mainForm.greek;
+textarea_bc.addEventListener("input", bc2greek);
+textarea_greek.addEventListener("input", greek2bc);
+</script>
+</html>
